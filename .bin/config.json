@@ -1,0 +1,10 @@
+{
+  "sketch": "../DevKitState.ino",
+  "config": "deviceConnectionString",
+  "functionRelativePath": "azureFunction",
+  "functionName": "devkit-state",
+  "tasks": {
+    "provision": ["subscription", "iothub", "functionapp", "armtemplatedeployment", "device"],
+    "deploy": ["functiondeploy"]
+  }
+}
