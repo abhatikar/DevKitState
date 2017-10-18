@@ -1,10 +1,9 @@
 #include "Arduino.h"
 #include "AZ3166WiFi.h"
-#include "IoTHubMQTTClient.h"
+#include "DevKitMQTTClient.h"
 #include "SystemVersion.h"
 #include "Sensor.h"
-#include "json_object.h"
-#include "json_tokener.h"
+#include "parson.h"
 
 DevI2C *ext_i2c;
 LSM6DSLSensor *acc_gyro;
@@ -32,47 +31,40 @@ static void InitWifi()
     Screen.print(1, "No Wi-Fi\r\n ");
   }
 }
-
-void parseTwinMessage(const char *message)
+void parseTwinMessage(DEVICE_TWIN_UPDATE_STATE updateState, const char *message)
 {
-  Serial.print("parseTwinMessage\r\n");
-
-  json_object *jsonObject, *desiredObject, *userLEDStateObject;
-	if ((jsonObject = json_tokener_parse(message)) != NULL) {
-        bool success = false;
-        json_object_object_get_ex(jsonObject, "desired", &desiredObject);
-        if (desiredObject != NULL && json_object_get_type(desiredObject) == json_type_object)
-        {
-            json_object_object_get_ex(desiredObject, "userLEDState", &userLEDStateObject);
-            if (userLEDStateObject != NULL)
-            {
-                userLEDState = json_object_get_int(userLEDStateObject);
-                success = true;
-            }
-        }
-        if (success == false)
-        {
-            json_object_object_get_ex(jsonObject, "userLEDState", &userLEDStateObject);
-            if (userLEDStateObject != NULL)
-            {
-              userLEDState = json_object_get_int(userLEDStateObject);
-              success = true;
-            }
-        }
-
-        if (success)
-        {
-          pinMode(LED_USER, OUTPUT);
-          digitalWrite(LED_USER, userLEDState);
-        }
-        
-    }
-    else
+    JSON_Value *root_value;
+    root_value = json_parse_string(message);
+    if (json_value_get_type(root_value) != JSONObject)
     {
+        if (root_value != NULL)
+        {
+            json_value_free(root_value);
+        }
         LogError("parse %s failed", message);
         return;
     }
-    json_object_put(jsonObject);
+    JSON_Object *root_object = json_value_get_object(root_value);
+
+    int userLEDState = 0;
+    if (updateState == DEVICE_TWIN_UPDATE_COMPLETE)
+    {
+        JSON_Object *desired_object = json_object_get_object(root_object, "desired");
+        if (desired_object != NULL)
+        {
+          userLEDState = json_object_get_number(desired_object, "userLEDState");
+        }
+    }
+    else
+    {
+      userLEDState = json_object_get_number(root_object, "userLEDState");
+    }
+    if (userLEDState == 1)
+    {
+        pinMode(LED_USER, OUTPUT);
+        digitalWrite(LED_USER, userLEDState);
+    }
+    json_value_free(root_value);
 }
 
 static void DeviceTwinCallback(DEVICE_TWIN_UPDATE_STATE updateState, const unsigned char *payLoad, int size)
@@ -84,7 +76,7 @@ static void DeviceTwinCallback(DEVICE_TWIN_UPDATE_STATE updateState, const unsig
   }
   memcpy(temp, payLoad, size);
   temp[size] = '\0';
-  parseTwinMessage(temp);
+  parseTwinMessage(updateState, temp);
   free(temp);
 }
 
@@ -102,8 +94,8 @@ void setup()
   }
 
   Screen.print(3, " > IoT Hub");
-  IoTHubMQTT_Init(true);
-  IoTHubMQTT_SetDeviceTwinCallback(DeviceTwinCallback);
+  DevKitMQTTClient_Init(true);
+  DevKitMQTTClient_SetDeviceTwinCallback(DeviceTwinCallback);
 }
 
 bool i2cError = false;
@@ -115,7 +107,7 @@ int sensorIrda;
 
 void loop()
 {
-  IoTHubMQTT_Check();
+  DevKitMQTTClient_Check();
   const char *firmwareVersion = getDevkitVersion();
   const char *wifiSSID = WiFi.SSID();
   int wifiRSSI = WiFi.RSSI();
@@ -247,6 +239,6 @@ void loop()
 
   char state[500];
   snprintf(state, 500, "{\"firmwareVersion\":\"%s\",\"wifiSSID\":\"%s\",\"wifiRSSI\":%d,\"wifiIP\":\"%s\",\"wifiMask\":\"%s\",\"macAddress\":\"%s\",\"sensorMotion\":%d,\"sensorPressure\":%d,\"sensorMagnetometer\":%d,\"sensorHumidityAndTemperature\":%d,\"sensorIrda\":%d}", firmwareVersion, wifiSSID, wifiRSSI, wifiIP, wifiMask, macAddress, sensorMotion, sensorPressure, sensorMagnetometer, sensorHumidityAndTemperature, sensorIrda);
-  IoTHubMQTT_ReportState(state);
+  DevKitMQTTClient_ReportState(state);
   delay(5000);
 }
