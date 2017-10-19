@@ -46,7 +46,6 @@ void parseTwinMessage(DEVICE_TWIN_UPDATE_STATE updateState, const char *message)
     }
     JSON_Object *root_object = json_value_get_object(root_value);
 
-    int userLEDState = 0;
     if (updateState == DEVICE_TWIN_UPDATE_COMPLETE)
     {
         JSON_Object *desired_object = json_object_get_object(root_object, "desired");
@@ -59,7 +58,7 @@ void parseTwinMessage(DEVICE_TWIN_UPDATE_STATE updateState, const char *message)
     {
       userLEDState = json_object_get_number(root_object, "userLEDState");
     }
-    
+
     pinMode(LED_USER, OUTPUT);
     digitalWrite(LED_USER, userLEDState);
     json_value_free(root_value);
