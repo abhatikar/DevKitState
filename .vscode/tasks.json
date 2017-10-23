@@ -28,21 +28,6 @@
             "isBuildCommand": false
         },
         {
-            "taskName": "cloud-deploy",
-            "command": "node",
-            "windows": {
-                "args": ["'${env:USERPROFILE}\\azure-board-cli\\out\\cli.js'", "deploy", ".bin"]
-            },
-            "linux": {
-                "args": ["\"$HOME/azure-board-cli/out/cli.js\"", "deploy", ".bin"]
-            },
-            "osx": {
-                "args": ["\"/Users/$USER/azure-board-cli/out/cli.js\"", "deploy", ".bin"]
-            },
-            "isShellCommand": true,
-            "isBuildCommand": false
-        },
-        {
             "taskName": "device-upload",
             "command": "node",
             "windows": {

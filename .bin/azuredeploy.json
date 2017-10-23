@@ -2,9 +2,6 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "functionAppName": {
-            "type": "string"
-        },
         "iotHubName": {
             "type": "string"
         },
@@ -53,33 +50,6 @@
                     "uri": "[concat('https://raw.githubusercontent.com/VSChina/azureiotdevkit_tools/master/arm-template/', parameters('iotHubExisted'), 'iothub.json#')]"
                 }
             }
-        },
-        {
-            "apiVersion": "2017-05-10",
-            "name": "functionAppTemplate",
-            "type": "Microsoft.Resources/deployments",
-            "properties": {
-                "parameters": {
-                    "functionAppName": {
-                        "value": "[parameters('functionAppName')]"
-                    },
-                    "appSettings": {
-                        "value": [
-                            {
-                                "name": "iotHubConnectionString",
-                                "value": "[reference('iothubTemplate').outputs.iotHubConnectionString.value]"
-                            }
-                        ]
-                    }
-                },
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/VSChina/azureiotdevkit_tools/master/arm-template/functionapp.json#"
-                }
-            },
-            "dependsOn": [
-                "[resourceId('Microsoft.Resources/deployments', 'iothubTemplate')]"
-            ]
         }
     ]
 }
