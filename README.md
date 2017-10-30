@@ -3,9 +3,9 @@ title: "DevKit State"
 permalink: /docs/projects/devkit-state/
 excerpt: "Monitor DevKit states and control the user LED with Azure IoT Hub device twins."
 header:
-  overlay_image: /assets/images/projects-iothub.jpg
+  overlay_image: /assets/images/devkit-state.jpg
   overlay_full: true
-  teaser: /assets/images/projects-iothub-th.jpg
+  teaser: /assets/images/devkit-state-th.jpg
 icons:
   - url: /assets/images/icon-iot-hub.svg
     target: https://azure.microsoft.com/en-us/services/iot-hub/
