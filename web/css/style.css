@@ -37,6 +37,7 @@ body {
     color: green;
     font-size: 8px;
     font-family: 'Press Start 2P', cursive;
+    user-select: none;
     text-shadow: 1px 0 black, 0 1px black, -1px 0 black, 0 -1px black,
                  1px 1px black, -1px 1px black, -1px -1px black, 1px -1px black,
                  2px 0 black, 0 2px black, -2px 0 black, 0 -2px black;
@@ -786,4 +787,89 @@ body {
     width: 1;
     height: 1;
     opacity: 0;
+}
+
+.devkit .rgb_led {
+    width: 12%;
+    height: 8%;
+    position: absolute;
+    top: 70%;
+    left: 4%;
+    cursor: pointer;
+    z-index: 100;
+}
+
+.devkit .rgb_led:before {
+    content: "";
+    position: absolute;
+    width: 20%;
+    height: 20%;
+    top: 40%;
+    left: 40%;
+    border: green 1px solid;
+    border-radius: 50%;
+}
+
+.devkit .rgb_led.on:before {
+    background: green;
+}
+
+.devkit .info .rgb_led_state {
+    position: absolute;
+    bottom: 22%;
+    left: -44%;
+    height: 16px;
+    width: 173px;
+    padding: 1%;
+    padding-top: 0;
+    border-right: green 1px dashed;
+    border-bottom: green 1px dashed;
+}
+
+.devkit .info .rgb_led_state .inner {
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+}
+
+.rgb_controller {
+    height: 20px;
+    line-height: 20px;
+    padding: 1px;
+}
+
+.rgb_controller .bar {
+    position: relative;
+    display: inline-block;
+    height: 10px;
+    width: 100px;
+    vertical-align: top;
+    top: 5px;
+}
+
+.rgb_controller .bar input {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.rgb_controller .bar > div {
+    height: 10px;
+    width: 100px;
+    border: 1px solid green;
+    box-sizing: border-box;
+}
+
+.rgb_controller .bar > div > div {
+    height: 6px;
+    width: 20px;
+    position: absolute;
+    left: 2px;
+    top: 2px;
+    background: green;
 }

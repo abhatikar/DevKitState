@@ -4,6 +4,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Formatting;
 using Microsoft.Azure.Devices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using Newtonsoft.Json;
 
@@ -36,40 +37,76 @@ public static async Task<HttpResponseMessage> Run(HttpRequestMessage req, TraceW
     }
     else if (action == "set")
     {
+        string _key = req.GetQueryNameValuePairs()
+            .FirstOrDefault(q => string.Compare(q.Key, "key", true) == 0)
+            .Value;
         string _state = req.GetQueryNameValuePairs()
             .FirstOrDefault(q => string.Compare(q.Key, "state", true) == 0)
             .Value;
-        int state;
-        bool parsed = Int32.TryParse(_state, out state);
 
-        if (parsed)
-        {
-            SetDeviceTwin(state).Wait();
-            response = new HttpResponseMessage(HttpStatusCode.NoContent);
-        }
-        else
-        {
-            response = new HttpResponseMessage(HttpStatusCode.BadRequest);
-        }
+        SetDeviceTwin(_state, _key).Wait();
+        response = new HttpResponseMessage(HttpStatusCode.NoContent);
     }
     else
     {
         response = new HttpResponseMessage(HttpStatusCode.BadRequest);
     }
-    
+
     return response;
 }
 
-public static async Task SetDeviceTwin(int userLEDState)
+public static async Task SetDeviceTwin(string _state, string _key)
 {
-     var twin = await registryManager.GetTwinAsync("AZ3166");
-     var patch = new {
-        properties = new {
-            desired = new {
-                userLEDState = userLEDState
+    var twin = await registryManager.GetTwinAsync("AZ3166");
+    int state;
+    bool parsed;
+    switch(_key) {
+        case "userLED":
+            parsed = Int32.TryParse(_state, out state);
+            if (parsed) {
+                var patch = new {
+                    properties = new {
+                        desired = new {
+                            userLEDState = state
+                        }
+                    }
+                };
+                await registryManager.UpdateTwinAsync(twin.DeviceId, JsonConvert.SerializeObject(patch), twin.ETag);
             }
-        }
-    };
-     
-    await registryManager.UpdateTwinAsync(twin.DeviceId, JsonConvert.SerializeObject(patch), twin.ETag);
+            break;
+        case "rgbLED":
+            parsed = Int32.TryParse(_state, out state);
+            if (parsed) {
+                var patch = new {
+                    properties = new {
+                        desired = new {
+                            rgbLEDState = state
+                        }
+                    }
+                };
+                await registryManager.UpdateTwinAsync(twin.DeviceId, JsonConvert.SerializeObject(patch), twin.ETag);
+            }
+            break;
+        case "rgbLEDColor":
+            var color = Regex.Split(_state, ",");
+            int r, g, b;
+            bool parsedR = Int32.TryParse(color[0], out r);
+            bool parsedG = Int32.TryParse(color[1], out g);
+            bool parsedB = Int32.TryParse(color[2], out b);
+            if (parsedR && parsedG && parsedB) {
+                var patch = new {
+                    properties = new {
+                        desired = new {
+                            rgbLEDR = r,
+                            rgbLEDG = g,
+                            rgbLEDB = b
+                        }
+                    }
+                };
+                await registryManager.UpdateTwinAsync(twin.DeviceId, JsonConvert.SerializeObject(patch), twin.ETag);
+            }
+            break;
+        default:
+            break;
+    }
 }

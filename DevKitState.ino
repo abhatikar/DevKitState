@@ -11,8 +11,14 @@ HTS221Sensor *ht_sensor;
 LIS2MDLSensor *magnetometer;
 IRDASensor *IrdaSensor;
 LPS22HBSensor *pressureSensor;
+RGB_LED rgbLed;
+
 static bool hasWifi = false;
 static int userLEDState = 0;
+static int rgbLEDState = 0;
+static int rgbLEDR = 0;
+static int rgbLEDG = 0;
+static int rgbLEDB = 0;
 
 static void InitWifi()
 {
@@ -52,11 +58,19 @@ void parseTwinMessage(DEVICE_TWIN_UPDATE_STATE updateState, const char *message)
         if (desired_object != NULL)
         {
           userLEDState = json_object_get_number(desired_object, "userLEDState");
+          rgbLEDState = json_object_get_number(desired_object, "rgbLEDState");
+          rgbLEDR = json_object_get_number(desired_object, "rgbLEDR");
+          rgbLEDG = json_object_get_number(desired_object, "rgbLEDG");
+          rgbLEDB = json_object_get_number(desired_object, "rgbLEDB");
         }
     }
     else
     {
       userLEDState = json_object_get_number(root_object, "userLEDState");
+      rgbLEDState = json_object_get_number(desired_object, "rgbLEDState");
+      rgbLEDR = json_object_get_number(desired_object, "rgbLEDR");
+      rgbLEDG = json_object_get_number(desired_object, "rgbLEDG");
+      rgbLEDB = json_object_get_number(desired_object, "rgbLEDB");
     }
 
     pinMode(LED_USER, OUTPUT);
@@ -233,6 +247,15 @@ void loop()
 
   pinMode(LED_USER, OUTPUT);
   digitalWrite(LED_USER, userLEDState);
+
+  if (rgbLEDState == 0)
+  {
+    rgbLed.turnOff();
+  }
+  else
+  {
+    rgbLed.setColor(rgbLEDR, rgbLEDG, rgbLEDB);
+  }
 
   char state[500];
   snprintf(state, 500, "{\"firmwareVersion\":\"%s\",\"wifiSSID\":\"%s\",\"wifiRSSI\":%d,\"wifiIP\":\"%s\",\"wifiMask\":\"%s\",\"macAddress\":\"%s\",\"sensorMotion\":%d,\"sensorPressure\":%d,\"sensorMagnetometer\":%d,\"sensorHumidityAndTemperature\":%d,\"sensorIrda\":%d}", firmwareVersion, wifiSSID, wifiRSSI, wifiIP, wifiMask, macAddress, sensorMotion, sensorPressure, sensorMagnetometer, sensorHumidityAndTemperature, sensorIrda);
