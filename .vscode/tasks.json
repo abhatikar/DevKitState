@@ -61,13 +61,13 @@
             "taskName": "config-device-connection",
             "command": "node",
             "windows": {
-                "args": ["'${env:USERPROFILE}\\azure-board-cli\\out\\cli.js'", "config_device_connection", ".bin"]
+                "args": ["'${env:USERPROFILE}\\azure-board-cli\\out\\cli.js'", "config_device_connection_string", ".bin"]
             },
             "linux": {
-                "args": ["\"$HOME/azure-board-cli/out/cli.js\"", "config_device_connection", ".bin"]
+                "args": ["\"$HOME/azure-board-cli/out/cli.js\"", "config_device_connection_string", ".bin"]
             },
             "osx": {
-                "args": ["\"/Users/$USER/azure-board-cli/out/cli.js\"", "config_device_connection", ".bin"]
+                "args": ["\"/Users/$USER/azure-board-cli/out/cli.js\"", "config_device_connection_string", ".bin"]
             },
             "isShellCommand": true,
             "isBuildCommand": false
