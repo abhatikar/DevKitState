@@ -23,7 +23,7 @@ static int rgbLEDB = 0;
 static void InitWifi()
 {
   Screen.print(2, "Connecting...");
-  
+
   if (WiFi.begin() == WL_CONNECTED)
   {
     IPAddress ip = WiFi.localIP();
@@ -57,20 +57,59 @@ void parseTwinMessage(DEVICE_TWIN_UPDATE_STATE updateState, const char *message)
         JSON_Object *desired_object = json_object_get_object(root_object, "desired");
         if (desired_object != NULL)
         {
-          userLEDState = json_object_get_number(desired_object, "userLEDState");
-          rgbLEDState = json_object_get_number(desired_object, "rgbLEDState");
-          rgbLEDR = json_object_get_number(desired_object, "rgbLEDR");
-          rgbLEDG = json_object_get_number(desired_object, "rgbLEDG");
-          rgbLEDB = json_object_get_number(desired_object, "rgbLEDB");
+          if (json_object_has_value(desired_object, "userLEDState"))
+          {
+            userLEDState = json_object_get_number(desired_object, "userLEDState");
+          }
+          if (json_object_has_value(desired_object, "rgbLEDState"))
+          {
+            rgbLEDState = json_object_get_number(desired_object, "rgbLEDState");
+          }
+          if (json_object_has_value(desired_object, "rgbLEDR"))
+          {
+            rgbLEDR = json_object_get_number(desired_object, "rgbLEDR");
+          }
+          if (json_object_has_value(desired_object, "rgbLEDG"))
+          {
+            rgbLEDG = json_object_get_number(desired_object, "rgbLEDG");
+          }
+          if (json_object_has_value(desired_object, "rgbLEDB"))
+          {
+            rgbLEDB = json_object_get_number(desired_object, "rgbLEDB");
+          }
         }
     }
     else
     {
-      userLEDState = json_object_get_number(root_object, "userLEDState");
-      rgbLEDState = json_object_get_number(desired_object, "rgbLEDState");
-      rgbLEDR = json_object_get_number(desired_object, "rgbLEDR");
-      rgbLEDG = json_object_get_number(desired_object, "rgbLEDG");
-      rgbLEDB = json_object_get_number(desired_object, "rgbLEDB");
+      if (json_object_has_value(root_object, "userLEDState"))
+      {
+        userLEDState = json_object_get_number(root_object, "userLEDState");
+      }
+      if (json_object_has_value(root_object, "rgbLEDState"))
+      {
+        rgbLEDState = json_object_get_number(root_object, "rgbLEDState");
+      }
+      if (json_object_has_value(root_object, "rgbLEDR"))
+      {
+        rgbLEDR = json_object_get_number(root_object, "rgbLEDR");
+      }
+      if (json_object_has_value(root_object, "rgbLEDG"))
+      {
+        rgbLEDG = json_object_get_number(root_object, "rgbLEDG");
+      }
+      if (json_object_has_value(root_object, "rgbLEDB"))
+      {
+        rgbLEDB = json_object_get_number(root_object, "rgbLEDB");
+      }
+    }
+
+    if (rgbLEDState == 0)
+    {
+      rgbLed.turnOff();
+    }
+    else
+    {
+      rgbLed.setColor(rgbLEDR, rgbLEDG, rgbLEDB);
     }
 
     pinMode(LED_USER, OUTPUT);
@@ -93,6 +132,7 @@ static void DeviceTwinCallback(DEVICE_TWIN_UPDATE_STATE updateState, const unsig
 
 void setup()
 {
+  rgbLed.turnOff();
   Screen.init();
   Screen.print(0, "IoT DevKit");
   Screen.print(2, "Initializing...");
@@ -245,9 +285,6 @@ void loop()
     }
   }
 
-  pinMode(LED_USER, OUTPUT);
-  digitalWrite(LED_USER, userLEDState);
-
   if (rgbLEDState == 0)
   {
     rgbLed.turnOff();
@@ -256,6 +293,9 @@ void loop()
   {
     rgbLed.setColor(rgbLEDR, rgbLEDG, rgbLEDB);
   }
+
+  pinMode(LED_USER, OUTPUT);
+  digitalWrite(LED_USER, userLEDState);
 
   char state[500];
   snprintf(state, 500, "{\"firmwareVersion\":\"%s\",\"wifiSSID\":\"%s\",\"wifiRSSI\":%d,\"wifiIP\":\"%s\",\"wifiMask\":\"%s\",\"macAddress\":\"%s\",\"sensorMotion\":%d,\"sensorPressure\":%d,\"sensorMagnetometer\":%d,\"sensorHumidityAndTemperature\":%d,\"sensorIrda\":%d}", firmwareVersion, wifiSSID, wifiRSSI, wifiIP, wifiMask, macAddress, sensorMotion, sensorPressure, sensorMagnetometer, sensorHumidityAndTemperature, sensorIrda);
