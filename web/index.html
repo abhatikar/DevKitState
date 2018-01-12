@@ -31,9 +31,7 @@
     <div class="pressure"></div>
     <div class="ht"></div>
     <div class="user_led" v-bind:class="{on: userLEDState === 1}" v-on:click="updateUserLEDState()"></div>
-    <div class="rgb_led" v-bind:class="{on: rgbLEDState === 1}" v-on:click="updateRgbLEDState()"
-        v-bind:style="rgbLEDState === 1 ? {'background-color': `rgb(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b})`,
-            'box-shadow': `0px 0px 10px 2px rgb(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b})`} : {'background-color': 'rgb(0, 0, 0)'}" ></div>
+    <div class="rgb_led" v-bind:class="{on: rgbLEDState === 1}" v-bind:style="ledStyle" v-on:click="updateRgbLEDState()"></div>
     <div class="info" v-show="lastUpdated !== ''">
         <div class="wifi_state">
             <p>WiFi SSID: {{ reportedTwin.wifiSSID || 'N/A' }}</p>
