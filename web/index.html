@@ -31,6 +31,7 @@
     <div class="pressure"></div>
     <div class="ht"></div>
     <div class="user_led" v-bind:class="{on: userLEDState === 1}" v-on:click="updateUserLEDState()"></div>
+    <div class="rgb_led" v-bind:class="{on: rgbLEDState === 1}" v-on:click="updateRgbLEDState()"></div>
     <div class="info" v-show="lastUpdated !== ''">
         <div class="wifi_state">
             <p>WiFi SSID: {{ reportedTwin.wifiSSID || 'N/A' }}</p>
@@ -64,6 +65,29 @@
         <div class="user_led_state">
             <p>User LED: {{ userLEDState === 1 ? 'On' : 'Off' }}</p>
         </div>
+        <div class="rgb_led_state">
+            <div class="inner">
+                <p>RGB LED: {{ rgbLEDState === 1 ? 'On' : 'Off' }}</p>
+                <div class="rgb_controller">R: 
+                    <div class="bar">
+                        <div><div v-bind:style="{width: (rgbColor.r / 255 * 96) + 'px'}"></div></div>
+                        <input type="range" min="0" max="255" v-model="rgbColor.r" v-on:change="updateRgbLEDColor"/>
+                    </div>
+                </div>
+                <div class="rgb_controller">G: 
+                    <div class="bar">
+                        <div><div v-bind:style="{width: (rgbColor.g / 255 * 96) + 'px'}"></div></div>
+                        <input type="range" min="0" max="255" v-model="rgbColor.g" v-on:change="updateRgbLEDColor"/>
+                    </div>
+                </div>
+                <div class="rgb_controller">B: 
+                    <div class="bar">
+                        <div><div v-bind:style="{width: (rgbColor.b / 255 * 96) + 'px'}"></div></div>
+                        <input type="range" min="0" max="255" v-model="rgbColor.b" v-on:change="updateRgbLEDColor"/>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="connecion_status" v-show="loading">
         <p>Loading...</p>
@@ -71,7 +95,7 @@
     <div class="inpt_box" v-show="!functionAppNameSet">
         <input type="text" spellcheck="false" v-model="functionAppName" placeholder="Function App Name"><button v-on:click="getState()">Connect</button>
     </div>
-    <iframe id="user_led_update" name="user_led_update" :src="userLEDUpdateEndpoint"></iframe>
+    <iframe id="user_led_update" name="user_led_update" :src="stateUpdateEndpoint"></iframe>
 </div>
 <script src="js/main.js"></script>
 </body>

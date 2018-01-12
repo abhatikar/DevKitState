@@ -11,13 +11,19 @@ HTS221Sensor *ht_sensor;
 LIS2MDLSensor *magnetometer;
 IRDASensor *IrdaSensor;
 LPS22HBSensor *pressureSensor;
+RGB_LED rgbLed;
+
 static bool hasWifi = false;
 static int userLEDState = 0;
+static int rgbLEDState = 0;
+static int rgbLEDR = 0;
+static int rgbLEDG = 0;
+static int rgbLEDB = 0;
 
 static void InitWifi()
 {
   Screen.print(2, "Connecting...");
-  
+
   if (WiFi.begin() == WL_CONNECTED)
   {
     IPAddress ip = WiFi.localIP();
@@ -51,12 +57,59 @@ void parseTwinMessage(DEVICE_TWIN_UPDATE_STATE updateState, const char *message)
         JSON_Object *desired_object = json_object_get_object(root_object, "desired");
         if (desired_object != NULL)
         {
-          userLEDState = json_object_get_number(desired_object, "userLEDState");
+          if (json_object_has_value(desired_object, "userLEDState"))
+          {
+            userLEDState = json_object_get_number(desired_object, "userLEDState");
+          }
+          if (json_object_has_value(desired_object, "rgbLEDState"))
+          {
+            rgbLEDState = json_object_get_number(desired_object, "rgbLEDState");
+          }
+          if (json_object_has_value(desired_object, "rgbLEDR"))
+          {
+            rgbLEDR = json_object_get_number(desired_object, "rgbLEDR");
+          }
+          if (json_object_has_value(desired_object, "rgbLEDG"))
+          {
+            rgbLEDG = json_object_get_number(desired_object, "rgbLEDG");
+          }
+          if (json_object_has_value(desired_object, "rgbLEDB"))
+          {
+            rgbLEDB = json_object_get_number(desired_object, "rgbLEDB");
+          }
         }
     }
     else
     {
-      userLEDState = json_object_get_number(root_object, "userLEDState");
+      if (json_object_has_value(root_object, "userLEDState"))
+      {
+        userLEDState = json_object_get_number(root_object, "userLEDState");
+      }
+      if (json_object_has_value(root_object, "rgbLEDState"))
+      {
+        rgbLEDState = json_object_get_number(root_object, "rgbLEDState");
+      }
+      if (json_object_has_value(root_object, "rgbLEDR"))
+      {
+        rgbLEDR = json_object_get_number(root_object, "rgbLEDR");
+      }
+      if (json_object_has_value(root_object, "rgbLEDG"))
+      {
+        rgbLEDG = json_object_get_number(root_object, "rgbLEDG");
+      }
+      if (json_object_has_value(root_object, "rgbLEDB"))
+      {
+        rgbLEDB = json_object_get_number(root_object, "rgbLEDB");
+      }
+    }
+
+    if (rgbLEDState == 0)
+    {
+      rgbLed.turnOff();
+    }
+    else
+    {
+      rgbLed.setColor(rgbLEDR, rgbLEDG, rgbLEDB);
     }
 
     pinMode(LED_USER, OUTPUT);
@@ -79,6 +132,7 @@ static void DeviceTwinCallback(DEVICE_TWIN_UPDATE_STATE updateState, const unsig
 
 void setup()
 {
+  rgbLed.turnOff();
   Screen.init();
   Screen.print(0, "IoT DevKit");
   Screen.print(2, "Initializing...");
@@ -229,6 +283,15 @@ void loop()
     {
       sensorIrda = 0;
     }
+  }
+
+  if (rgbLEDState == 0)
+  {
+    rgbLed.turnOff();
+  }
+  else
+  {
+    rgbLed.setColor(rgbLEDR, rgbLEDG, rgbLEDB);
   }
 
   pinMode(LED_USER, OUTPUT);

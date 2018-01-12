@@ -7,14 +7,22 @@ function init() {
             deviceId:'AZ3166',
             lastUpdated: '',
             userLEDState: 0,
-            userLEDUpdateEndpoint: 'about:blank',
+            rgbLEDState: 0,
+            rgbColor: {
+                r: 0,
+                g: 0,
+                b: 0
+            },
+            stateUpdateEndpoint: 'about:blank',
             loading: false,
             functionAppNameSet: false
         },
         methods: {
             getTwin: getTwin,
             getState: getState,
-            updateUserLEDState: updateUserLEDState
+            updateUserLEDState: updateUserLEDState,
+            updateRgbLEDState: updateRgbLEDState,
+            updateRgbLEDColor: updateRgbLEDColor
         }
     });
 }
@@ -29,6 +37,10 @@ function getTwin() {
         scope.loading = false;
         scope.reportedTwin = data.Reported;
         scope.userLEDState = data.Desired.userLEDState || 0;
+        scope.rgbLEDState = data.Desired.rgbLEDState || 0;
+        scope.rgbColor.r = data.Desired.rgbLEDR || 0;
+        scope.rgbColor.g = data.Desired.rgbLEDG || 0;
+        scope.rgbColor.b = data.Desired.rgbLEDB || 0;
         scope.lastUpdated = new Date(scope.reportedTwin.$metadata.$lastUpdated).toLocaleString('en-GB', {hour12: false}).replace(',', '');
     });
 }
@@ -36,7 +48,25 @@ function getTwin() {
 function updateUserLEDState() {
     var timespan = new Date().getTime();
     var state = this.userLEDState === 1 ? 0 : 1;
-    this.userLEDUpdateEndpoint = `https://${this.functionAppName}.azurewebsites.net/api/devkit-state?action=set&state=${state}&t=${timespan}`;
+    this.stateUpdateEndpoint = `https://${this.functionAppName}.azurewebsites.net/api/devkit-state?action=set&state=${state}&key=userLED&t=${timespan}`;
+    setTimeout(this.getTwin, 1000);
+}
+
+function updateRgbLEDState() {
+    var timespan = new Date().getTime();
+    var state = this.rgbLEDState === 1 ? 0 : 1;
+    this.stateUpdateEndpoint = `https://${this.functionAppName}.azurewebsites.net/api/devkit-state?action=set&state=${state}&key=rgbLED&t=${timespan}`;
+    setTimeout(this.getTwin, 1000);
+    if (state === 1 && this.rgbColor.r === 0 && this.rgbColor.g === 0 && this.rgbColor.b === 0) {
+        this.rgbColor.r = 255;
+        setTimeout(updateRgbLEDColor.bind(this), 500);
+    }
+}
+
+function updateRgbLEDColor() {
+    var timespan = new Date().getTime();
+    var state = this.rgbColor;
+    this.stateUpdateEndpoint = `https://${this.functionAppName}.azurewebsites.net/api/devkit-state?action=set&state=${state.r},${state.g},${state.b}&key=rgbLEDColor&t=${timespan}`;
     setTimeout(this.getTwin, 1000);
 }
 
