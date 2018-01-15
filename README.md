@@ -66,6 +66,6 @@ You can use this example to monitor MXChip IoT DevKit states and control the use
 
 ## Screenshots
 
-![](https://raw.githubusercontent.com/DevKitExamples/DevKitState/master/screenshots/devkit-state.png)
+![](https://raw.githubusercontent.com/DevKitExamples/DevKitState/master/screenshots/devkit-state.gif)
 
 {% include feedback.html tutorial="devkit-state" %}
