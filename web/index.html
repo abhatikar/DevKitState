@@ -31,7 +31,7 @@
     <div class="pressure"></div>
     <div class="ht"></div>
     <div class="user_led" v-bind:class="{on: userLEDState === 1}" v-on:click="updateUserLEDState()"></div>
-    <div class="rgb_led" v-bind:class="{on: rgbLEDState === 1}" v-on:click="updateRgbLEDState()"></div>
+    <div class="rgb_led" v-bind:class="{on: rgbLEDState === 1}" v-bind:style="ledStyle" v-on:click="updateRgbLEDState()"></div>
     <div class="info" v-show="lastUpdated !== ''">
         <div class="wifi_state">
             <p>WiFi SSID: {{ reportedTwin.wifiSSID || 'N/A' }}</p>
@@ -89,7 +89,7 @@
             </div>
         </div>
     </div>
-    <div class="connecion_status" v-show="loading">
+    <div class="connection_status" v-show="loading">
         <p>Loading...</p>
     </div>
     <div class="inpt_box" v-show="!functionAppNameSet">

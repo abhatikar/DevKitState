@@ -17,6 +17,23 @@ function init() {
             loading: false,
             functionAppNameSet: false
         },
+        computed: {
+            ledStyle: function () {
+                if (this.rgbLEDState === 1) {
+                    let r = this.rgbColor.r;
+                    let g = this.rgbColor.g;
+                    let b = this.rgbColor.b;
+                    return {
+                        'background-color': `rgb(${r}, ${g}, ${b})`,
+                        'box-shadow': `0px 0px 10px 2px rgb(${r}, ${g}, ${b})`
+                    };
+                }
+                else
+                    return {
+                        'background-color': 'rgb(0, 0, 0)'
+                    };
+            }
+        },
         methods: {
             getTwin: getTwin,
             getState: getState,
