@@ -68,4 +68,11 @@ You can use this example to monitor MXChip IoT DevKit states and control the use
 
 ![](https://raw.githubusercontent.com/DevKitExamples/DevKitState/master/screenshots/devkit-state.gif)
 
+## Customize device ID
+
+You can customize device ID in IoT Hub by following [this doc](https://microsoft.github.io/azure-iot-developer-kit/docs/customize-device-id/), however, you still need to change the hardcoding `AZ3166` to customized device ID in the code currently. Here's the list of files you need to modify:
+
+* [azureFunction/devkit-state/run.csx](https://github.com/DevKitExamples/DevKitState/blob/master/azureFunction/devkit-state/run.csx#L60)
+* [web/js/main.js](https://github.com/DevKitExamples/DevKitState/blob/master/web/js/main.js#L7)
+
 {% include feedback.html tutorial="devkit-state" %}
