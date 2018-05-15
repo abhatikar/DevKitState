@@ -1,6 +1,8 @@
 ---
 title: "DevKit State"
 permalink: /docs/projects/devkit-state/
+redirect_to:
+  - https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-arduino-iot-devkit-az3166-devkit-state
 excerpt: "Monitor DevKit states and control the user LED with Azure IoT Hub device twins."
 header:
   overlay_image: https://raw.githubusercontent.com/DevKitExamples/DevKitState/master/devkit-state.jpg
