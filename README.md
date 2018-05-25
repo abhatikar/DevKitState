@@ -27,6 +27,8 @@ You can use this example to monitor MXChip IoT DevKit states and control the use
 3. `cd DevKitState`
 4. `code .`
 
+**NOTE**: Some red squggly lines will show up all over the function code, ignore those for now while we port this over to Functions v2 runtime (.NET Core). Once that is complete you'll be able to get full IntelliSense for the function project.
+
 ## Provision Azure Services
 
 1. Click **Task** menu in Visual Studio Code - **Run Task...** - **cloud-provision**
@@ -61,10 +63,10 @@ You can use this example to monitor MXChip IoT DevKit states and control the use
 3. Click connect button
 4. You should see DevKit state in few seconds
 
-## Control DevKit User LED
+## Control DevKit LEDs
 
-1. Click User LED on the web page
-2. You should see user LED state changed in few seconds
+1. Click the User LED and RGB LED color controls on the web page
+2. The state of the LEDs should be reflected on the hardware board within a few seconds
 
 ## Screenshots
 
