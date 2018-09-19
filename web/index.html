@@ -44,16 +44,18 @@
             <p>IrDA: {{ reportedTwin.sensorIrda === 1 ? 'Working' : 'Down' }}</p>
         </div>
         <div class="motion_state">
-            <p>Motion Sensor: {{ reportedTwin.sensorMotion === 1 ? 'Working' : 'Down' }}</p>
+            <p>Motion Sensor (Accelerometer and Gyroscope) </p>
+                <p>x {{reportedTwin.Accelerometer_xaxis}},y {{reportedTwin.Accelerometer_yaxis}},z {{reportedTwin.Accelerometer_zaxis}} </p>
+                <p>x {{reportedTwin.Gyro_xaxis}},y {{reportedTwin.Gyro_yaxis}},z {{reportedTwin.Gyro_zaxis}} </p>
         </div>
         <div class="mag_state">
-            <p>Magnetometer Sensor: {{ reportedTwin.sensorMagnetometer === 1 ? 'Working' : 'Down' }}</p>
+            <p>Magnetometer Sensor: {{ reportedTwin.sensorIrda === 1 ? 'x' + reportedTwin.Magnetometer_xaxis+ ', y ' + reportedTwin.Magnetometer_yaxis + ', z ' + reportedTwin.Magnetometer_zaxis : 'Down'}}</p>
         </div>
         <div class="pressure_state">
-            <p>Pressure Sensor: {{ reportedTwin.sensorPressure === 1 ? 'Working' : 'Down' }}</p>
+            <p>Pressure Sensor: {{reportedTwin.Pressure}}hPa,{{reportedTwin.P_Temperature}}C</p>
         </div>
         <div class="ht_state">
-            <p>Humidity &amp; Temperature Sensor: {{ reportedTwin.sensorHumidityAndTemperature === 1 ? 'Working' : 'Down' }}</p>
+        <p>Humidity &amp; Temperature Sensor: {{reportedTwin.Humidity}}%,{{reportedTwin.Temperature}}C </p>
         </div>
         <div class="firmware_version">
             <p>Device ID: {{ deviceId }}</p>

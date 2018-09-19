@@ -155,6 +155,13 @@ int sensorPressure;
 int sensorMagnetometer;
 int sensorHumidityAndTemperature;
 int sensorIrda;
+float sensorHumidity = 0;
+float sensorTemperature = 0;
+int m_axes[3];
+int a_axes[3];
+int g_axes[3];
+float pressureTemperature = 0;
+float pressureReading = 0;
 
 void loop()
 {
@@ -184,6 +191,11 @@ void loop()
   }
 
   int sensorInitResult;
+  int sensorEnableResult;
+  int sensorHumidityResult;
+  int sensorTemperatureResult;
+  int sensorPressureResult;
+  
 
   if (!i2cError)
   {
@@ -191,12 +203,20 @@ void loop()
     {
       acc_gyro = new LSM6DSLSensor(*ext_i2c, D4, D5);
       sensorInitResult = acc_gyro->init(NULL);
-      acc_gyro->enableAccelerator();
-      acc_gyro->enableGyroscope();
+      
 
       if (sensorInitResult == 0)
       {
+        acc_gyro->enableAccelerator();
+        acc_gyro->enableGyroscope();
         sensorMotion = 1;
+        acc_gyro->getXAxes(a_axes);
+        acc_gyro->getGAxes(g_axes);
+        Serial.printf("Axes: x - %d, y - %d, z - %d\n", a_axes[0], a_axes[1], a_axes[2]);
+        Serial.printf("Axes: x - %d, y - %d, z - %d\n", g_axes[0], g_axes[1], g_axes[2]);
+        delay(1000);
+        acc_gyro->disableAccelerator();
+        acc_gyro->disableGyroscope();
       }
       else
       {
@@ -216,6 +236,12 @@ void loop()
       if (sensorInitResult == 0)
       {
         sensorHumidityAndTemperature = 1;
+        sensorEnableResult = ht_sensor->enable();
+        sensorHumidityResult = ht_sensor->getHumidity(&sensorHumidity);
+        sensorTemperatureResult = ht_sensor->getTemperature(&sensorTemperature);
+        ht_sensor->disable();
+        ht_sensor->reset();
+        delay(1000);
       }
       else
       {
@@ -235,6 +261,8 @@ void loop()
       if (sensorInitResult == 0)
       {
         sensorMagnetometer = 1;
+        magnetometer->getMAxes(m_axes);
+        delay(1000);
       }
       else
       {
@@ -249,11 +277,15 @@ void loop()
     try
     {
       pressureSensor = new LPS22HBSensor(*ext_i2c);
-      sensorInitResult = pressureSensor -> init(NULL);
+      sensorInitResult = pressureSensor->init(NULL);
 
       if (sensorInitResult == 0)
       {
         sensorPressure = 1;
+        sensorPressureResult = pressureSensor->getPressure(&pressureReading);
+        sensorTemperatureResult = pressureSensor->getTemperature(&pressureTemperature);
+        //pressureSensor->reset();
+        delay(1000);
       }
       else
       {
@@ -298,6 +330,9 @@ void loop()
   digitalWrite(LED_USER, userLEDState);
 
   char state[500];
+  if(sensorHumidityAndTemperature == 1)
+  snprintf(state, 500, "{\"firmwareVersion\":\"%s\",\"wifiSSID\":\"%s\",\"wifiRSSI\":%d,\"wifiIP\":\"%s\",\"wifiMask\":\"%s\",\"macAddress\":\"%s\",\"sensorIrda\":%d,\"Humidity\":%3.2f,\"Temperature\":%3.2f, \"Magnetometer_xaxis\":%d, \"Magnetometer_yaxis\":%d, \"Magnetometer_zaxis\":%d, \"P_Temperature\":%3.2f,\"Pressure\":%3.2f, \"Accelerometer_xaxis\":%d, \"Accelerometer_yaxis\":%d, \"Accelerometer_zaxis\":%d, \"Gyro_xaxis\":%d, \"Gyro_yaxis\":%d, \"Gyro_zaxis\":%d}", firmwareVersion, wifiSSID, wifiRSSI, wifiIP, wifiMask, macAddress, sensorIrda, sensorHumidity, sensorTemperature, m_axes[0], m_axes[1], m_axes[2], pressureTemperature, pressureReading, a_axes[0], a_axes[1], a_axes[2], g_axes[0], g_axes[1], g_axes[2]);
+  else
   snprintf(state, 500, "{\"firmwareVersion\":\"%s\",\"wifiSSID\":\"%s\",\"wifiRSSI\":%d,\"wifiIP\":\"%s\",\"wifiMask\":\"%s\",\"macAddress\":\"%s\",\"sensorMotion\":%d,\"sensorPressure\":%d,\"sensorMagnetometer\":%d,\"sensorHumidityAndTemperature\":%d,\"sensorIrda\":%d}", firmwareVersion, wifiSSID, wifiRSSI, wifiIP, wifiMask, macAddress, sensorMotion, sensorPressure, sensorMagnetometer, sensorHumidityAndTemperature, sensorIrda);
   DevKitMQTTClient_ReportState(state);
   delay(5000);
